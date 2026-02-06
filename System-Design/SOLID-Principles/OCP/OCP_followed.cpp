@@ -1,5 +1,3 @@
-// OCP stands for open close principle
-
 #include <iostream>
 #include <vector>
 
@@ -20,7 +18,7 @@ public:
 //1. ShoppingCart: Only responsible for Cart related business logic.
 class ShoppingCart {
 private:
-    vector<Product*> products;
+    vector<Product*> products; // Store heap-allocated products
 
 public:
     void addProduct(Product* p) { 
@@ -60,40 +58,51 @@ public:
     }
 };
 
-// 3. ShoppingCartStorage: Only responsible for saving cart to DB
-class ShoppingCartStorage {
+//Abstract class
+class Persistence {
 private:
-    ShoppingCart* cart; 
+    ShoppingCart* cart;
 
 public:
-    ShoppingCartStorage(ShoppingCart* cart) { 
-        this->cart = cart; 
-    }
+    virtual void save(ShoppingCart* cart) = 0; // Pure virtual function
+};
 
-    void saveToSQLDatabase() {
+class SQLPersistence : public Persistence {
+public:
+    void save(ShoppingCart* cart) {
         cout << "Saving shopping cart to SQL DB..." << endl;
     }
+};
 
-    void saveToMongoDatabase() {
-        cout << "Saving shopping cart to Mongo DB..." << endl;
+class MongoPersistence : public Persistence {
+public:
+    void save(ShoppingCart* cart) {
+        cout << "Saving shopping cart to MongoDB..." << endl;
     }
+};
 
-    void saveToFile() {
-        cout << "Saving shopping cart to File..." << endl;
+class FilePersistence : public Persistence {
+public:
+    void save(ShoppingCart* cart) {
+        cout << "Saving shopping cart to a file..." << endl;
     }
 };
 
 int main() {
     ShoppingCart* cart = new ShoppingCart();
-
     cart->addProduct(new Product("Laptop", 50000));
     cart->addProduct(new Product("Mouse", 2000));
 
     ShoppingCartPrinter* printer = new ShoppingCartPrinter(cart);
     printer->printInvoice();
 
-    ShoppingCartStorage* db = new ShoppingCartStorage(cart);
-    db->saveToSQLDatabase();
+    Persistence* db = new SQLPersistence();
+    Persistence* mongo = new MongoPersistence();
+    Persistence* file = new FilePersistence();
+
+    db->save(cart);   // Save to SQL database
+    mongo->save(cart); // Save to MongoDB
+    file->save(cart);  // Save to File
 
     return 0;
 }
