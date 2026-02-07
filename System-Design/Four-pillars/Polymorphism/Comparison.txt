@@ -1,0 +1,8 @@
+| Feature           | Compile-time   | Runtime           |
+| ----------------- | -------------- | ----------------- |
+| Decision time     | Before running | During running    |
+| Speed             | Faster         | Slightly slower   |
+| Achieved by       | Overloading    | Virtual functions |
+| Binding           | Static         | Dynamic           |
+| Example           | Calculator     | Animal            |
+| Need inheritance? | ❌ No           | ✔ Yes            |
